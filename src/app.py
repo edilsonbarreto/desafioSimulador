@@ -10,6 +10,63 @@ SALDO_INICIAL_JOGADOR = 300
 VALOR_VOLTA = 100
 DADO_FACES = 6
 
+class Propriedade:
+    """Representa uma propriedade no tabuleiro."""
+
+    def __init__(self, id_prop, custo, aluguel):
+        self.id = id_prop
+        self.custo = custo
+        self.aluguel = aluguel
+        self.proprietario = None
+
+class Jogador:
+    """Representa um jogador com seus comportamentos e estados no jogo"""
+
+    def __init__(self, nome, tipo):
+        self.nome = nome
+        self.tipo = tipo
+        self.saldo = SALDO_INICIAL_JOGADOR
+        self.posicao = 0
+        self.ativo = True
+        self.propriedades = []
+        self.voltas = 0
+
+    def joga_dado(self):
+        return
+
+    def mover(self):
+        return
+
+    def deve_comprar(self):
+        return
+
+    def comprar(self):
+        return
+
+    def pagar_aluguel(self):
+        return
+
+    def perder_jogo(self):
+        return
+
+
+class Partida:
+    """Controla o estado e a simulação do jogo em si."""
+
+    def __init__(self):
+        return
+
+    def simular(self):
+
+        return
+    def finalizar_por_tempo(self):
+        return
+
+    def gerar_resultado(self):
+        return
+
+
+
 app = Flask(__name__)
 
 
