@@ -1,10 +1,16 @@
 from flask import Flask
+import random
 from flask import Flask, jsonify
 from flasgger import Swagger, swag_from
 
 
 # --- Constantes de Configuração do Jogo ---
 NUM_PROPRIEDADES = 20
+CUSTO_MIN_PROPRIEDADE = 50
+CUSTO_MAX_PROPRIEDADE = 200
+ALUGUEL_MIN_PROPRIEDADE = 20
+ALUGUEL_MAX_PROPRIEDADE = 100
+
 MAX_RODADAS = 1000
 SALDO_INICIAL_JOGADOR = 300
 VALOR_VOLTA = 100
@@ -32,19 +38,37 @@ class Jogador:
         self.voltas = 0
 
     def joga_dado(self):
-        return
+        """Simula o lançamento de um dado equiprovável de 6 faces."""
+        return random.randint(1, DADO_FACES)
 
-    def mover(self):
-        return
+    def mover(self, dado, num_propriedades):
+        """Move o jogador e verifica se completou uma volta."""
+        pos_anterior = self.posicao
+        self.posicao = (self.posicao + dado) % num_propriedades
+
+        if self.posicao < pos_anterior and self.posicao != 0:
+            self.voltas += 1
+            self.saldo += VALOR_VOLTA
 
     def deve_comprar(self):
         return
 
-    def comprar(self):
-        return
+    def comprar(self,propriedade):
+        """Realiza a compra da propriedade."""
+        self.saldo -= propriedade.custo
+        propriedade.proprietario = self.nome
+        self.propriedades.append(propriedade)
 
-    def pagar_aluguel(self):
-        return
+    def pagar_aluguel(self, proprietario_aluguel, aluguel):
+        """Paga o aluguel e verifica se ficou negativo."""
+        self.saldo -= aluguel
+
+        if proprietario_aluguel:
+            proprietario_aluguel.saldo += aluguel
+
+        if self.saldo < 0:
+            self.perder_jogo()
+
 
     def perder_jogo(self):
         return
@@ -54,7 +78,27 @@ class Partida:
     """Controla o estado e a simulação do jogo em si."""
 
     def __init__(self):
-        return
+        # Cria as propriedades usando as constantes
+        self.propriedades = [
+            Propriedade(
+                i,
+                random.randint(CUSTO_MIN_PROPRIEDADE, CUSTO_MAX_PROPRIEDADE),
+                random.randint(ALUGUEL_MIN_PROPRIEDADE, ALUGUEL_MAX_PROPRIEDADE)
+            )
+            for i in range(NUM_PROPRIEDADES)
+        ]
+        self.tipos_jogadores = ["impulsivo", "exigente", "cauteloso", "aleatorio"]
+
+        # Cria e embaralha os jogadores
+        self.jogadores = [
+            Jogador(tipo.capitalize(), tipo) for tipo in self.tipos_jogadores
+        ]
+        random.shuffle(self.jogadores)
+
+        self.num_propriedades = len(self.propriedades)
+        self.turno_atual = 0
+        self.max_rodadas = MAX_RODADAS
+        self.rodadas_jogadas = 0
 
     def simular(self):
 
@@ -66,6 +110,7 @@ class Partida:
         return
 
 
+# --- Configuração do Flask e Swagger ---
 
 app = Flask(__name__)
 
