@@ -14,6 +14,10 @@ ALUGUEL_MAX_PROPRIEDADE = 100
 MAX_RODADAS = 1000
 SALDO_INICIAL_JOGADOR = 300
 VALOR_VOLTA = 100
+
+ALUGUEL_EXIGENTE_MINIMO = 50
+RESERVA_CAUTELOSO = 80
+PROBABILIDADE_ALEATORIO = 0.5
 DADO_FACES = 6
 
 class Propriedade:
@@ -50,8 +54,31 @@ class Jogador:
             self.voltas += 1
             self.saldo += VALOR_VOLTA
 
-    def deve_comprar(self):
-        return
+    def deve_comprar(self, propriedade):
+        """Lógica de decisão de compra baseada no tipo de jogador."""
+        custo = propriedade.custo
+        saldo_apos_compra = self.saldo - custo
+
+        if custo > self.saldo:
+            return False
+
+        if self.tipo == "impulsivo":
+            # Impulsivo: compra qualquer propriedade
+            return True
+
+        elif self.tipo == "exigente":
+            # Exigente: compra se o aluguel > 50 (ALUGUEL_EXIGENTE_MINIMO)
+            return propriedade.aluguel > ALUGUEL_EXIGENTE_MINIMO
+
+        elif self.tipo == "cauteloso":
+            # Cauteloso: compra se sobrar pelo menos 80 (RESERVA_CAUTELOSO)
+            return saldo_apos_compra >= RESERVA_CAUTELOSO
+
+        elif self.tipo == "aleatorio":
+            # Aleatório: PROBABILIDADE_ALEATORIO (50%) de chance de compra
+            return random.random() < PROBABILIDADE_ALEATORIO
+
+        return False
 
     def comprar(self,propriedade):
         """Realiza a compra da propriedade."""
@@ -69,9 +96,12 @@ class Jogador:
         if self.saldo < 0:
             self.perder_jogo()
 
-
     def perder_jogo(self):
-        return
+        """Remove o jogador do jogo e libera suas propriedades."""
+        self.ativo = False
+        for prop in self.propriedades:
+            prop.proprietario = None
+        self.propriedades = []
 
 
 class Partida:
