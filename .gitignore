@@ -17,7 +17,7 @@ __pycache__/
 # 2. DOCKER & INFRAESTRUTURA
 # ========================
 # Ignora arquivos de credenciais ou configs locais
-.env
+#.env
 .secrets
 
 # Arquivos de log do container
