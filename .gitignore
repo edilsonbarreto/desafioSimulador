@@ -1,0 +1,69 @@
+# ========================
+# 1. AMBIENTE VIRTUAL (PYTHON)
+# ========================
+# Ignora ambientes virtuais locais (venv, env, etc.)
+venv/
+env/
+.venv/
+
+# Caches de compilação
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.$py.class
+
+# ========================
+# 2. DOCKER & INFRAESTRUTURA
+# ========================
+# Ignora arquivos de credenciais ou configs locais
+.env
+.secrets
+
+# Arquivos de log do container
+*.log
+!config/postgres/volume/.gitkeep # Se você usar .gitkeep para manter a pasta vazia
+
+# Arquivos temporários do Docker Compose/Build
+*.swp
+*.bak
+.dockerignore
+Dockerfile # Opcional, se você quiser forçar o commit do Dockerfile
+
+# ========================
+# 3. PASTAS DE DADOS E ARQUIVOS (CONFORME SUA ESTRUTURA)
+# ========================
+# Volume de Dados do PostgreSQL (Configurado no docker-compose.yml)
+config/postgres/volume/
+
+# Arquivos de banco de dados SQLite (se usar)
+*.sqlite3
+
+# Arquivos de mídia e estáticos gerados (Django/Flask)
+/static_collected/
+/media/
+
+# ========================
+# 4. IDEs E FERRAMENTAS
+# ========================
+
+# PyCharm/IntelliJ (Muito Importante Ignorar)
+.idea/
+
+# VS Code
+.vscode/
+
+# Histórico do IPython
+.ipynb_checkpoints
+.ipython/
+
+# ========================
+# 5. FERRAMENTAS DE BUILD (SE USAR)
+# ========================
+# Pytest / Cobertura de Código
+.pytest_cache/
+.coverage
+
+# Arquivos de distribuição (se você fizer build)
+/dist/
+/build/

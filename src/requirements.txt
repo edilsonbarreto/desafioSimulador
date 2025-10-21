@@ -1,0 +1,19 @@
+# Dependência para interagir com o PostgreSQL
+psycopg2-binary==2.9.9
+
+# Ferramenta para gerenciar variáveis de ambiente (.env)
+python-dotenv==1.0.1
+
+# Ferramenta para Depuração Remota (PyCharm/debugpy)
+# ESSENCIAL para a configuração do docker-compose.yml
+debugpy==1.8.1
+
+# Core do Framework Web
+Flask==3.0.3
+
+# Gerenciamento de Banco de Dados (ORM/Migrações)
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
+
+# Documentação Swagger/OpenAPI
+flasgger==0.9.7b2
