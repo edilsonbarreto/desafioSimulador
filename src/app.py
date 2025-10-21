@@ -131,14 +131,71 @@ class Partida:
         self.rodadas_jogadas = 0
 
     def simular(self):
+        """Executa a simulação completa da partida."""
 
-        return
+        while self.rodadas_jogadas < self.max_rodadas:
+            jogador = self.jogadores[self.turno_atual % len(self.jogadores)]
+
+            if jogador.ativo:
+                dado = jogador.joga_dado()
+                jogador.mover(dado, self.num_propriedades)
+                propriedade_atual = self.propriedades[jogador.posicao]
+
+                if propriedade_atual.proprietario is None:
+                    if jogador.deve_comprar(propriedade_atual):
+                        jogador.comprar(propriedade_atual)
+
+                elif propriedade_atual.proprietario != jogador.nome:
+                    proprietario = next((p for p in self.jogadores if p.nome == propriedade_atual.proprietario), None)
+                    if proprietario and proprietario.ativo:
+                        jogador.pagar_aluguel(proprietario, propriedade_atual.aluguel)
+
+                # Checa vitória por falência
+                jogadores_ativos = [j for j in self.jogadores if j.ativo]
+                if len(jogadores_ativos) == 1:
+                    vencedor = jogadores_ativos[0].nome
+                    return self.gerar_resultado(vencedor)
+
+            self.turno_atual += 1
+            if self.turno_atual % len(self.jogadores) == 0:
+                self.rodadas_jogadas += 1
+
+        # Finaliza por limite de rodadas
+        return self.finalizar_por_tempo()
+
     def finalizar_por_tempo(self):
-        return
+        """Determina o vencedor pelo maior saldo (critério de desempate: ordem de turno)."""
+        jogadores_ativos = [j for j in self.jogadores if j.ativo]
 
-    def gerar_resultado(self):
-        return
+        jogadores_ordenados = sorted(
+            jogadores_ativos,
+            key=lambda j: (-j.saldo, self.jogadores.index(j))
+        )
 
+        vencedor = jogadores_ordenados[0].nome if jogadores_ordenados else "Nenhum"
+        return self.gerar_resultado(vencedor)
+
+    def gerar_resultado(self, vencedor):
+        """Formata o resultado final da simulação."""
+        # Ordena a lista de jogadores ativos por saldo final (decrescente)
+        jogadores_finais = sorted(
+            [j for j in self.jogadores if j.ativo],
+            key=lambda j: j.saldo,
+            reverse=True
+        )
+        nomes_ordenados = [j.nome for j in jogadores_finais]
+
+        # Inclui jogadores falidos no final
+        jogadores_inativos = sorted(
+            [j for j in self.jogadores if not j.ativo],
+            key=lambda j: j.nome
+        )
+        nomes_ordenados.extend([j.nome for j in jogadores_inativos])
+
+        return {
+            "vencedor": vencedor,
+            "jogadores": nomes_ordenados
+        }
 
 # --- Configuração do Flask e Swagger ---
 
@@ -198,13 +255,11 @@ swagger = Swagger(app, config=swagger_config)
 def simular_jogo():
     """Endpoint para rodar a simulação do jogo e retornar o resultado."""
 
-    resultado = "Funcionou!"
+    partida = Partida()
+    resultado = partida.simular()
 
-    return jsonify({"resultado": resultado})
+    return jsonify(resultado)
 
 
 if __name__ == '__main__':
-    # Certifique-se de que instalou: pip install flask flasgger
-    print("Servidor Flask rodando...")
-    print("Swagger UI em: http://127.0.0.1:5000/apidocs/")
     app.run(debug=True)

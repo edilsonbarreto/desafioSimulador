@@ -32,8 +32,8 @@ services:
 #      - db
 
     # COMANDO CHAVE: Mantém o container rodando em segundo plano
-    command: tail -f /dev/null
-
+    command: flask run --host 0.0.0.0
+    #command: tail -f /dev/null
 # Comando de Inicialização com Debugpy (Template)
     # ATENÇÃO: Alterar este comando para o ponto de entrada real do projeto!
     # EXEMPLO DJANGO:
